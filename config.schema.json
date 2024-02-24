@@ -1,0 +1,255 @@
+{
+   "pluginAlias":"HomebridgeConditionalEvents",
+   "pluginType":"platform",
+   "singular":false,
+   "schema":{
+      "type":"object",
+      "properties":{
+         "name":{
+            "type":"string",
+            "title":"Trigger Name",
+            "required":true
+         },
+         "triggerMethod":{
+            "type":"string",
+            "title":"Trigger Method",
+            "oneOf":[
+               {
+                  "title":"Sensor",
+                  "enum":[
+                     "sensor"
+                  ]
+               },
+               {
+                  "title":"Switch",
+                  "enum":[
+                     "switch"
+                  ]
+               }
+            ],
+            "default":"sensor",
+            "required":true
+         },
+         "sensorType":{
+            "type":"string",
+            "title":"Trigger Sensor Type",
+            "oneOf":[
+               {
+                  "title":"Contact",
+                  "enum":[
+                     "contact"
+                  ]
+               },
+               {
+                  "title":"Leak",
+                  "enum":[
+                     "leak"
+                  ]
+               },
+               {
+                  "title":"Motion",
+                  "enum":[
+                     "motion"
+                  ]
+               },
+               {
+                  "title":"Occupancy",
+                  "enum":[
+                     "occupancy"
+                  ]
+               }
+            ],
+            "condition":{
+               "functionBody":"return model.triggerMethod == 'sensor';"
+            },
+            "default":"contact",
+            "required":true
+         },
+         "switchSettings":{
+            "type":"object",
+            "notitle":true,
+            "properties":{
+               "type":{
+                  "type":"string",
+                  "title":"Turn Off",
+                  "oneOf":[
+                     {
+                        "title":"Automatically",
+                        "enum":[
+                           "auto"
+                        ]
+                     },
+                     {
+                        "title":"Manually",
+                        "enum":[
+                           "manual"
+                        ]
+                     }
+                  ],
+                  "condition":{
+                     "functionBody":"return model.triggerMethod == 'switch';"
+                  },
+                  "default":"manual",
+                  "required":true
+               },
+               "defaultState":{
+                  "type":"string",
+                  "title":"Default/Starting State",
+                  "oneOf":[
+                     {
+                        "title":"On",
+                        "enum":[
+                           "on"
+                        ]
+                     },
+                     {
+                        "title":"Off",
+                        "enum":[
+                           "off"
+                        ]
+                     }
+                  ],
+                  "default":"off",
+                  "condition":{
+                     "functionBody":"return model.triggerMethod == 'switch' && model.switchSettings.type == 'manual';"
+                  },
+                  "required":true
+               },
+               "offTimer":{
+                  "type":"number",
+                  "default":1,
+                  "minimum":1,
+                  "title":"After How Many Seconds?",
+                  "condition":{
+                     "functionBody":"return model.triggerMethod == 'switch' && model.switchSettings.type == 'auto';"
+                  },
+                  "required":true
+               },
+               "resettable":{
+                  "type":"boolean",
+                  "title":"Always Reset Timer?",
+                  "default":false,
+                  "condition":{
+                     "functionBody":"return model.triggerMethod == 'switch' && model.switchSettings.type == 'auto';"
+                  },
+                  "required":true
+               }
+            }
+         },
+         "conditions":{
+            "type":"array",
+            "minItems":2,
+            "items":{
+               "type":"object",
+               "properties":{
+                  "name":{
+                     "type":"string",
+                     "required":true,
+                     "title":"Condition Switch Name"
+                  },
+                  "flip":{
+                     "type":"boolean",
+                     "title":"Flip Condition?"
+                  },
+                  "switchSettings":{
+                     "type":"object",
+                     "notitle":true,
+                     "properties":{
+                        "type":{
+                           "type":"string",
+                           "title":"Turn Off",
+                           "oneOf":[
+                              {
+                                 "title":"Automatically",
+                                 "enum":[
+                                    "auto"
+                                 ]
+                              },
+                              {
+                                 "title":"Manually",
+                                 "enum":[
+                                    "manual"
+                                 ]
+                              }
+                           ],
+                           "default":"manual",
+                           "required":true
+                        },
+                        "defaultState":{
+                           "type":"string",
+                           "title":"Default/Starting State",
+                           "oneOf":[
+                              {
+                                 "title":"On",
+                                 "enum":[
+                                    "on"
+                                 ]
+                              },
+                              {
+                                 "title":"Off",
+                                 "enum":[
+                                    "off"
+                                 ]
+                              }
+                           ],
+                           "default":"off",
+                           "required":true,
+                           "condition":{
+                              "functionBody":"return model.conditions[arrayIndices].switchSettings.type == 'manual';"
+                           }
+                        },
+                        "offTimer":{
+                           "type":"number",
+                           "default":1,
+                           "minimum":1,
+                           "title":"After How Many Seconds?",
+                           "required":true,
+                           "condition":{
+                              "functionBody":"return model.conditions[arrayIndices].switchSettings.type == 'auto';"
+                           }
+                        },
+                        "resettable":{
+                           "type":"boolean",
+                           "title":"Always Reset Timer?",
+                           "default":false,
+                           "required":true,
+                           "condition":{
+                              "functionBody":"return model.conditions[arrayIndices].switchSettings.type == 'auto';"
+                           }
+                        }
+                     }
+                  },
+                  "operator":{
+                     "type":"string",
+                     "title":"Logic Operator",
+                     "oneOf":[
+                        {
+                           "title":"AND",
+                           "enum":[
+                              "and"
+                           ]
+                        },
+                        {
+                           "title":"OR",
+                           "enum":[
+                              "or"
+                           ]
+                        }
+                     ],
+                     "default":"and",
+                     "condition":{
+                        "functionBody":"return arrayIndices < model.conditions.length - 1;"
+                     },
+                     "required":true
+                  }
+               }
+            }
+         },
+         "debug":{
+            "title":"Enable Debug Logs?",
+            "type":"boolean",
+            "default":false
+         }
+      }
+   }
+}
