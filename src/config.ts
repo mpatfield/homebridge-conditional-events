@@ -16,7 +16,6 @@ export interface SwitchConfig extends PlatformConfig {
 
 export interface ConditionConfig extends SwitchConfig {
     flip: boolean;
-    operator: Operator;
 }
 
 export interface EventConditionsConfig extends SwitchConfig {
@@ -25,6 +24,7 @@ export interface EventConditionsConfig extends SwitchConfig {
     name: string;
     triggerMethod: TriggerMethod;
     sensorType: SensorType;
+    operator: Operator;
 
     conditions: ConditionConfig[];
 }

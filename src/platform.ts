@@ -67,7 +67,7 @@ export class HomebridgeConditionalEventsPlatform implements DynamicPlatformPlugi
       (conditionConfig: ConditionConfig) => new ConditionSwitch(conditionConfig),
     );
 
-    const eventController = new EventController(eventAccessory, conditions, this.log);
+    const eventController = new EventController(eventAccessory, conditions, this.config.operator, this.log);
     for (const condition of conditions) {
       this.registerAccessory(condition.getName(), (accessory): BaseAccessory => {
         return this.constructSwitchAccessory(condition, accessory, eventController);

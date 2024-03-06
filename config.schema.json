@@ -136,6 +136,26 @@
                }
             }
          },
+         "operator":{
+            "type":"string",
+            "title":"Trigger If",
+            "oneOf":[
+               {
+                  "title":"All Conditions Are True",
+                  "enum":[
+                     "and"
+                  ]
+               },
+               {
+                  "title":"Any Conditions Are True",
+                  "enum":[
+                     "or"
+                  ]
+               }
+            ],
+            "default":"all",
+            "required":true
+         },
          "conditions":{
             "type":"array",
             "minItems":2,
@@ -218,29 +238,6 @@
                            }
                         }
                      }
-                  },
-                  "operator":{
-                     "type":"string",
-                     "title":"Logic Operator",
-                     "oneOf":[
-                        {
-                           "title":"AND",
-                           "enum":[
-                              "and"
-                           ]
-                        },
-                        {
-                           "title":"OR",
-                           "enum":[
-                              "or"
-                           ]
-                        }
-                     ],
-                     "default":"and",
-                     "condition":{
-                        "functionBody":"return arrayIndices < model.conditions.length - 1;"
-                     },
-                     "required":true
                   }
                }
             }

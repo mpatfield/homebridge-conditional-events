@@ -87,16 +87,11 @@ export class ConditionSwitch extends Switch {
   getFlip(): boolean {
     return this.config.flip;
   }
-
-  getOperator(): Operator {
-    return this.config.operator;
-  }
 }
 
-export function evaluateConditions(conditions: ConditionSwitch[], log: Logger): boolean {
+export function evaluateConditions(conditions: ConditionSwitch[], operator: Operator, log: Logger): boolean {
 
-  let result = false;
-  let nextOperator: Operator | undefined;
+  let result: boolean | undefined;
 
   for (const condition of conditions) {
 
@@ -107,7 +102,13 @@ export function evaluateConditions(conditions: ConditionSwitch[], log: Logger): 
 
     log.debug('Evaluating condition:', condition.getName(), current);
 
-    switch(nextOperator) {
+    if(!result) {
+      log.debug('Setting result to current:', current);
+      result = current;
+      continue;
+    }
+
+    switch(operator) {
       case Operator.and:
         log.debug('result && current:', result, current);
         result = result && current;
@@ -116,16 +117,10 @@ export function evaluateConditions(conditions: ConditionSwitch[], log: Logger): 
         log.debug('result || current:', result, current);
         result = result || current;
         break;
-      default:
-        log.debug('Setting result to current:', current);
-        result = current;
-        break;
     }
 
     log.debug('Current evalutation result:', condition.getName(), result);
-
-    nextOperator = condition.getOperator();
   }
 
-  return result;
+  return result ?? false;
 }
